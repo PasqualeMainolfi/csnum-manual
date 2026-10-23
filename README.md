@@ -28,5 +28,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
 `mkdocs.yml` holds the site configuration and inherits the navigation from the
-generated `nav.yml`. Anything placed in `docs/` outside `index.md`,
+generated `nav.yml`. The home page is `templates/home.md`, the one page written
+here: the sync fills its placeholders with the README intro and one card per
+opcode family. Site styles are in `docs/assets/stylesheets/extra.css`. Anything placed in `docs/` outside `index.md`,
 `changelog.md`, `guide/` and `reference/` is left alone by the sync.

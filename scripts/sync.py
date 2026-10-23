@@ -5,7 +5,8 @@
 
 The source defaults to $CSNUM_SRC, then to ../csound-numeric. What it writes:
 
-    docs/index.md            README intro (everything before the first ## heading)
+    docs/index.md            templates/home.md, filled with the README intro
+                             (everything before the first ## heading)
     docs/guide/*.md          one page per ## section of the README
     docs/reference/index.md  doc/README.md
     docs/reference/*.md      doc/*.md, one page per opcode plus the topic pages
@@ -33,6 +34,8 @@ BRANCH = "main"
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 GENERATED = ["index.md", "changelog.md", "guide", "reference"]
+TEMPLATE = ROOT / "templates" / "home.md"
+HOME_SHOWN = 5  # opcodes named on each family card of the home page
 
 # Short file names for the README sections; a section not listed here gets
 # its heading slug as file name.
@@ -259,6 +262,61 @@ def write_nav(guide_nav, families, orphans):
     (ROOT / "nav.yml").write_text("\n".join(out) + "\n", encoding="utf-8")
 
 
+def paragraphs(lines):
+    block = []
+    for line in lines + [""]:
+        if line.strip():
+            block.append(line)
+        elif block:
+            yield block
+            block = []
+
+
+def render_home(template, intro, families):
+    """Fill templates/home.md with the README intro and the family cards.
+
+    Placeholders, each alone on its line: <!-- csnum:note --> (the README's
+    **NOTE:** paragraph as an admonition), <!-- csnum:intro --> (the rest of the
+    intro, without its title), <!-- csnum:families --> (one card per family).
+    Inline, {{opcodes}} and {{families}} give the counts.
+    """
+    note, prose = [], []
+    for block in paragraphs([l for l in intro if not HEADING_RE.match(l)]):
+        if block[0].startswith("**NOTE:**"):
+            text = " ".join(block).replace("**NOTE:**", "").strip().strip("*").strip()
+            note = ["!!! note", "", f"    {text}"]
+        elif block != ["---"]:
+            prose += block + [""]
+
+    cards = ['<div class="grid cards" markdown>', ""]
+    for family, items in families:
+        shown = ", ".join(f"[{name}]({path})" for name, path in items[:HOME_SHOWN])
+        more = f" and {len(items) - HOME_SHOWN} more" if len(items) > HOME_SHOWN else ""
+        cards += [
+            f"-   **[{family}](reference/index.md#{md_slug(family)})** · {len(items)}",
+            "",
+            "    ---",
+            "",
+            f"    {shown}{more}",
+            "",
+        ]
+    cards.append("</div>")
+
+    blocks = {"note": note, "intro": prose, "families": cards}
+    counts = {
+        "opcodes": str(len({path for _, items in families for _, path in items})),
+        "families": str(len(families)),
+    }
+    out = []
+    for line in template:
+        m = re.fullmatch(r"\s*<!-- csnum:(\w+) -->\s*", line)
+        if m:
+            out += blocks[m.group(1)]
+            continue
+        out.append(re.sub(r"\{\{(\w+)\}\}", lambda m: counts[m.group(1)], line))
+    return out
+
+
 def main():
     arg = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("CSNUM_SRC", str(ROOT.parent / "csound-numeric"))
     src = Path(arg).resolve()
@@ -283,6 +341,7 @@ def main():
         page.lines = fix_fences(page.lines)
 
     families = reference_nav(read_lines(src / "doc" / "README.md"))
+    pages[0].lines = render_home(read_lines(TEMPLATE), pages[0].lines, families)
     in_nav = {path for _, items in families for _, path in items}
     in_nav |= {f"reference/{t}.md" for t in TOPICS} | {"reference/index.md"}
     orphans = sorted(f"reference/{p.name}" for p in doc_files if p.stem != "README" and f"reference/{p.name}" not in in_nav)

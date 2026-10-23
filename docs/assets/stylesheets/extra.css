@@ -1,0 +1,23 @@
+/* Home page hero */
+.csn-hero {
+  text-align: center;
+  padding: 1.5rem 0 1rem;
+}
+
+.md-typeset .csn-hero h1 {
+  margin: 0 0 0.6rem;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset .csn-tagline {
+  max-width: 38rem;
+  margin: 0 auto 1.4rem;
+  font-size: 1.05rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .csn-hero .md-button {
+  margin: 0.25rem;
+}
