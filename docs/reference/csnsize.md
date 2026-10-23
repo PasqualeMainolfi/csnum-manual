@@ -1,0 +1,97 @@
+# csnsize
+
+## Abstract
+
+Return the number of elements in an array.
+
+## Description
+
+`csnsize` reports how many elements an array actually holds — the product of its
+extents — regardless of its rank. A `2×3` matrix has size `6`.
+
+For an array made by [csnempty](csnempty.md) the size is `0` even though
+[csnshape](csnshape.md) still reports the extents that were reserved: the
+reservation is capacity, not content. `csnpush` raises the size, `csnpop` lowers
+it.
+
+Also takes a `:CsnStr;`. See [string arrays](string-arrays.md).
+
+## Syntax
+
+```csound
+n:i = csnsize(arr:CsnArr)
+n:k = csnsize(arr:CsnArr)
+n:i = csnsize(arr:CsnStr)
+n:k = csnsize(arr:CsnStr)
+```
+
+## Arguments
+
+* `arr:CsnArr / arr:CsnStr`: the array to query.
+
+## Output
+
+* `n:i / n:k`: the number of elements.
+
+## Execution Time
+
+* Init
+* Performance (k-rate)
+
+## Examples
+
+```csound-document
+<CsoundSynthesizer>
+<CsOptions>
+-n -d
+</CsOptions>
+<CsInstruments>
+
+; -----------------------------------------------------------------------------
+; csnsize.csd
+;
+; csnsize counts elements, not extents. It is the count that moves as an array
+; is pushed and popped, while csnshape reports what was reserved.
+; -----------------------------------------------------------------------------
+
+sr = 44100
+ksmps = 32
+0dbfs = 1
+
+instr 1
+    shape:i[]  = fillarray(2, 3)
+    mat:CsnArr = csnzeros(shape)
+    mat_size:i = csnsize(mat)
+    prints("2 x 3 matrix: size = %d\n", mat_size)
+
+    ; reserved capacity is not content
+    cap:i[]    = fillarray(4)
+    buf:CsnArr = csnempty(cap)
+    empty:i    = csnsize(buf)
+    csnpush(buf, 1)
+    csnpush(buf, 2)
+    csnpush(buf, 3)
+    filled:i   = csnsize(buf)
+    popped:i   = csnpop(buf)
+    after:i    = csnsize(buf)
+    prints("empty = %d, after 3 pushes = %d, after 1 pop = %d (popped %g)\n", empty, filled, after, popped)
+    turnoff
+endin
+
+</CsInstruments>
+<CsScore>
+i 1 0 0.1
+</CsScore>
+</CsoundSynthesizer>
+```
+
+## See also
+
+* [csnshape](csnshape.md)
+* [csndims](csndims.md)
+* [csnisempty](csnisempty.md)
+* [csnempty](csnempty.md)
+
+## Credits
+
+Pasquale Mainolfi, 2026

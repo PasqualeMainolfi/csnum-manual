@@ -1,0 +1,124 @@
+# csninsert
+
+## Abstract
+
+Insert an element, or a block, at a position in an array.
+
+## Description
+
+`csninsert` writes into its source array: it makes room at `index` and puts the
+new data there, shifting everything after it along. It returns no array — the
+source itself grows, within its spare capacity where it can and by reallocating
+where it cannot. On a [real-time path](csnrtlock.md) the reallocation is refused
+with a performance error instead.
+
+Two shapes of insertion share the name.
+
+* **One element.** `csninsert(array, value, index)` inserts a single value at a
+  flat index. `index` may run from `0` to the element count, end included, so
+  inserting at the end is an append.
+* **A block.** `csninsert(array, data, axis, index)` inserts a whole array along
+  an axis: a row into a matrix, say. The block must match the source on every
+  other axis.
+
+A complex array takes a `:Complex;` value in the one-element form.
+
+A `:CsnStr;` takes an `S` value in the one-element form and a `:CsnStr;` block
+in the block form, and stores copies of the strings. The one-element form
+writes its copy into the slot just past the end, where a pop or a remove left
+the string it dropped: on a [real-time path](csnrtlock.md) its k form runs as
+long as the value fits that slot and stops with a performance error,
+changing nothing, when it does not. The block form rebuilds the array in a
+working copy, so its k form is refused there on every pass that inserts. See
+[string arrays](string-arrays.md).
+
+## Syntax
+
+```csound
+csninsert(source:CsnArr, value:i, index:i)
+csninsert(source:CsnArr, value:Complex, index:i)
+csninsert(source:CsnArr, value:k, index:k, trig:k)
+csninsert(source:CsnArr, value:Complex, index:k, trig:k)
+csninsert(source:CsnArr, data:CsnArr, axis:i, index:i)
+csninsert(source:CsnArr, data:CsnArr, axis:k, index:k)
+csninsert(source:CsnArr, data:CsnArr, axis:k, index:k, trig:k)
+csninsert(source:CsnStr, value:S, index:i)
+csninsert(source:CsnStr, value:S, index:k, trig:k)
+csninsert(source:CsnStr, data:CsnStr, axis:i, index:i)
+csninsert(source:CsnStr, data:CsnStr, axis:k, index:k)
+csninsert(source:CsnStr, data:CsnStr, axis:k, index:k, trig:k)
+```
+
+## Arguments
+
+* `source:CsnArr / source:CsnStr`: the array that is written into.
+* `value:i / value:k / value:Complex / value:S`: the single element to insert; a string for a string array.
+* `data:CsnArr / data:CsnStr`: the block to insert, of the same type as `source`; must match it on every axis other than `axis`.
+* `axis:i / axis:k`: the axis the block is inserted along; negative values count from the end.
+* `index:i / index:k`: where to insert. Valid from `0` to the extent, end included.
+* `trig:k` (optional, default `1`): k-rate trigger. Nothing is inserted on a zero trigger.
+
+## Output
+
+None. The source array is modified.
+
+## Execution Time
+
+* Init
+* Performance (k-rate)
+
+## Examples
+
+```csound-document
+<CsoundSynthesizer>
+<CsOptions>
+-n -d
+</CsOptions>
+<CsInstruments>
+
+; -----------------------------------------------------------------------------
+; csninsert.csd
+;
+; csninsert writes into its source rather than returning a new array. Three
+; arguments insert one element at a flat index; four insert a block along an axis.
+; -----------------------------------------------------------------------------
+
+sr = 44100
+ksmps = 32
+0dbfs = 1
+
+instr 1
+    vec:CsnArr    = csnfromarray(array(1, 2, 3, 4))
+    csninsert(vec, 99, 2)
+    vec_out:i[]   = csntoarray(vec)
+    n:i           = csnsize(vec)
+    prints("one element, n = %d: %g %g %g %g %g\n", n, vec_out[0], vec_out[1], vec_out[2], vec_out[3], vec_out[4])
+
+    ; a whole row into a matrix
+    shape:i[]     = fillarray(3, 2)
+    mat:CsnArr    = csnreshape(csnfromarray(array(1, 2, 3, 4, 5, 6)), shape)
+    row:CsnArr    = csnfromarray(array(7, 8))
+    csninsert(mat, row, 0, 1)
+    mat_shape:i[] = csnshape(mat)
+    mat_out:i[]   = csntoarray(csnflatten(mat))
+    prints("block: %g x %g, flat = %g %g %g %g %g %g %g %g\n", mat_shape[0], mat_shape[1], mat_out[0], mat_out[1], mat_out[2], mat_out[3], mat_out[4], mat_out[5], mat_out[6], mat_out[7])
+    turnoff
+endin
+
+</CsInstruments>
+<CsScore>
+i 1 0 0.1
+</CsScore>
+</CsoundSynthesizer>
+```
+
+## See also
+
+* [csnremove](csnremove.md)
+* [csnpush](csnpush.md)
+* [csnconcat](csnconcat.md)
+* [csnsetslice](csnsetslice.md)
+
+## Credits
+
+Pasquale Mainolfi, 2026

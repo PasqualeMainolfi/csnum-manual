@@ -1,0 +1,111 @@
+# csncompress
+
+## Abstract
+
+Keeps only the entries a 1-D mask marks, along one axis or over the flattened array.
+
+## Description
+
+`csncompress` selects along a single axis: the mask is a 1-D array read against
+that axis, and every position where it is non-zero is kept, in order. With the
+axis omitted the source is read flat and the result is 1-D. An explicit `-1`
+selects the last axis.
+
+The mask may be shorter than the axis it selects on, and then the result is
+truncated to the mask's length — the trailing positions are simply never
+considered. This is the same rule numpy's `compress` follows. A mask longer than
+the axis is an error.
+
+Unlike [csnwhere](csnwhere.md), which keeps the shape and swaps values, this
+opcode changes the length of the axis it works on. The mask must be real; the
+source may be real or complex.
+
+A `:CsnStr;` source gives a `:CsnStr;` holding its own copies of the kept
+strings. On a [real-time path](csnrtlock.md) the k form writes into the room its slots
+already hold and stops with a performance error at the first string that does
+not fit. See [string arrays](string-arrays.md).
+
+## Syntax
+
+```csound
+out:CsnArr = csncompress(source:CsnArr, mask:CsnArr)
+out:CsnArr = csncompress(source:CsnArr, mask:CsnArr, axis:i)
+out:CsnArr = csncompress(source:CsnArr, mask:CsnArr, trig:k)
+out:CsnArr = csncompress(source:CsnArr, mask:CsnArr, trig:k, axis:k)
+out:CsnStr = csncompress(source:CsnStr, mask:CsnArr)
+out:CsnStr = csncompress(source:CsnStr, mask:CsnArr, axis:i)
+out:CsnStr = csncompress(source:CsnStr, mask:CsnArr, trig:k)
+out:CsnStr = csncompress(source:CsnStr, mask:CsnArr, trig:k, axis:k)
+```
+
+## Arguments
+
+* `source:CsnArr / source:CsnStr`: the array to select from.
+* `mask:CsnArr`: 1-D real mask, no longer than the selected axis.
+* `axis:i / axis:k` (optional): axis to select along. Omit it to read the source flat; `-1` selects the last axis.
+* `trig:k` (optional, default `1`): k-rate trigger. A zero trigger republishes the previous result.
+
+## Output
+
+* `out:CsnArr / out:CsnStr`: the kept entries.
+
+## Execution Time
+
+* Init
+* Performance (k-rate)
+
+## Examples
+
+```csound-document
+<CsoundSynthesizer>
+<CsOptions>
+-n -d
+</CsOptions>
+<CsInstruments>
+
+; -----------------------------------------------------------------------------
+; csncompress.csd
+;
+; Selecting rows out of a matrix, then the same mask read flat over a vector.
+; -----------------------------------------------------------------------------
+
+sr = 44100
+ksmps = 32
+0dbfs = 1
+
+instr 1
+    vec:CsnArr    = csnfromarray(array(10, 20, 30, 40))
+    keep:CsnArr   = csnfromarray(array(1, 0, 1, 1))
+
+    kept:CsnArr   = csncompress(vec, keep)
+    kept_out:i[]  = csntoarray(kept)
+    prints("kept = %g %g %g\n", kept_out[0], kept_out[1], kept_out[2])
+
+    ; along axis 0 of a 2x2, the mask picks rows
+    shape:i[]     = fillarray(2, 2)
+    mat:CsnArr    = csnreshape(vec, shape)
+    rows:CsnArr   = csnfromarray(array(0, 1))
+    row:CsnArr    = csncompress(mat, rows, -2)
+    flat:CsnArr   = csnflatten(row)
+    row_out:i[]   = csntoarray(flat)
+    prints("row  = %g %g\n", row_out[0], row_out[1])
+    turnoff
+endin
+
+</CsInstruments>
+<CsScore>
+i 1 0 0.1
+</CsScore>
+</CsoundSynthesizer>
+```
+
+## See also
+
+* [csnwhere](csnwhere.md)
+* [csnputmask](csnputmask.md)
+* [csnargwhere](csnargwhere.md)
+* [csntake](csntake.md)
+
+## Credits
+
+Pasquale Mainolfi, 2026

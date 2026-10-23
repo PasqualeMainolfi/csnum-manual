@@ -1,0 +1,106 @@
+# csnreverse
+
+## Abstract
+
+Reverse the flat element order of an array.
+
+## Description
+
+`csnreverse` reverses an array read flat: the last element becomes the first,
+whatever the rank. It is the flat reversal counterpart of [csnflip](csnflip.md), said directly
+and with no axis argument to give.
+
+Two forms share the name. The one with an output writes a new array and
+leaves the source alone; the one without an output rewrites the source in place
+and returns nothing.
+
+Both forms also take a `:CsnStr;`. The copy duplicates every string, so it
+owns its own; the in-place form only swaps the strings it already holds,
+allocating nothing, so it may run on a real-time path. There the copying k
+form writes into the room its slots already hold and stops with a performance
+error at the first string that does not fit. See [string
+arrays](string-arrays.md).
+
+## Syntax
+
+```csound
+out:CsnArr = csnreverse(source:CsnArr)
+out:CsnArr = csnreverse(source:CsnArr, trig:k)
+csnreverse(source:CsnArr)
+csnreverse(source:CsnArr, trig:k)
+out:CsnStr = csnreverse(source:CsnStr)
+out:CsnStr = csnreverse(source:CsnStr, trig:k)
+csnreverse(source:CsnStr)
+csnreverse(source:CsnStr, trig:k)
+```
+
+## Arguments
+
+* `source:CsnArr / source:CsnStr`: the array to reverse.
+* `trig:k`: k-rate trigger. The reversal is recomputed on a non-zero trigger; a zero trigger republishes the previous result.
+
+## Output
+
+* `out:CsnArr / out:CsnStr`: the reversed array. Omit it for the in-place form.
+
+## Execution Time
+
+* Init
+* Performance (k-rate)
+
+## Examples
+
+```csound-document
+<CsoundSynthesizer>
+<CsOptions>
+-n -d
+</CsOptions>
+<CsInstruments>
+
+; -----------------------------------------------------------------------------
+; csnreverse.csd
+;
+; csnreverse reads the array flat, so the rank does not matter: a 2 x 3 matrix
+; comes back with its six elements in the opposite order, still 2 x 3.
+; -----------------------------------------------------------------------------
+
+sr = 44100
+ksmps = 32
+0dbfs = 1
+
+instr 1
+    vec:CsnArr     = csnfromarray(array(1, 2, 3, 4))
+    rev:CsnArr     = csnreverse(vec)
+    rev_out:i[]    = csntoarray(rev)
+    prints("vector = %g %g %g %g\n", rev_out[0], rev_out[1], rev_out[2], rev_out[3])
+
+    shape:i[]      = fillarray(2, 3)
+    mat:CsnArr     = csnreshape(csnfromarray(array(1, 2, 3, 4, 5, 6)), shape)
+    mat_rev:CsnArr = csnreverse(mat)
+    mat_out:i[]    = csntoarray(csnflatten(mat_rev))
+    dims:i         = csndims(mat_rev)
+    prints("matrix (dims %d) = %g %g %g %g %g %g\n", dims, mat_out[0], mat_out[1], mat_out[2], mat_out[3], mat_out[4], mat_out[5])
+
+    ; in place
+    csnreverse(vec)
+    now:i[]        = csntoarray(vec)
+    prints("in place = %g %g %g %g\n", now[0], now[1], now[2], now[3])
+    turnoff
+endin
+
+</CsInstruments>
+<CsScore>
+i 1 0 0.1
+</CsScore>
+</CsoundSynthesizer>
+```
+
+## See also
+
+* [csnflip](csnflip.md)
+* [csnroll](csnroll.md)
+* [csnsort](csnsort.md)
+
+## Credits
+
+Pasquale Mainolfi, 2026

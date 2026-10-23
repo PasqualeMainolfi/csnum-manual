@@ -1,0 +1,121 @@
+# csnset
+
+## Abstract
+
+Write one element of an array by its coordinates.
+
+## Description
+
+`csnset` writes a single element, addressed by a Csound array of coordinates —
+one per dimension, in order, exactly as [csnget](csnget.md) reads it. The array
+is modified in place and nothing is published.
+
+A complex array takes a `:Complex;` value. The coordinates and the value may be
+at different rates, so an i-time cell can be written with a k-rate value and the
+other way round.
+
+Writing bumps the array's data version, so every k-rate consumer downstream sees
+a new generation on its next pass and recomputes.
+
+`csnset` is a generic array operation and does not preserve the invariant of an
+array previously created by `csnlikeset`. After writing into a set array, pass
+it through `csnlikeset` again before using set membership, combination or
+predicate operations. See [Set arrays and their invariant](set-arrays.md).
+
+On a `:CsnStr;` the element takes a copy of the string. Writing the string it
+already holds is no write, so a k-rate set of an unchanged value bumps no
+version. A new string goes into the room the element already holds: on a
+[real-time path](csnrtlock.md) a k-rate set runs as long as it fits and stops
+with a performance error, changing nothing, when it does not. `v[i][j] = "x"`
+and `v[i][j] init "x"` do the same. See [string arrays](string-arrays.md).
+
+## Syntax
+
+```csound
+csnset(arr:CsnArr, cell:i[], value:i)
+csnset(arr:CsnArr, cell:i[], value:k)
+csnset(arr:CsnArr, cell:i[], value:Complex)
+csnset(arr:CsnArr, cell:k[], value:i)
+csnset(arr:CsnArr, cell:k[], value:k)
+csnset(arr:CsnArr, cell:k[], value:Complex)
+csnset(arr:CsnStr, cell:i[], value:S)
+csnset(arr:CsnStr, cell:k[], value:S)
+```
+
+## Arguments
+
+* `arr:CsnArr / arr:CsnStr`: the array to write into.
+* `cell:i[] / cell:k[]`: the coordinates, one per dimension, each within its extent.
+* `value:i / value:k / value:Complex`: the value to store.
+* `value:S`: the string to store, for a string array.
+
+## Output
+
+None. The array is modified.
+
+## Execution Time
+
+* Init
+* Performance (k-rate)
+
+## Examples
+
+```csound-document
+<CsoundSynthesizer>
+<CsOptions>
+-n -d
+</CsOptions>
+<CsInstruments>
+
+; -----------------------------------------------------------------------------
+; csnset.csd
+;
+; csnset writes in place: no array comes back, and every consumer downstream
+; sees a new generation of the array on its next pass.
+; -----------------------------------------------------------------------------
+
+sr = 44100
+ksmps = 32
+0dbfs = 1
+
+instr 1
+    shape:i[]   = fillarray(2, 3)
+    mat:CsnArr  = csnzeros(shape)
+
+    cell:i[]    = fillarray(1, 2)
+    csnset(mat, cell, 7)
+    value:i     = csnget(mat, cell)
+    total:i     = csnsum(mat)
+    prints("mat[1][2] = %g, sum = %g\n", value, total)
+
+    ; the diagonal of a 3 x 3, written one cell at a time
+    square:i[]  = fillarray(3, 3)
+    eye:CsnArr  = csnzeros(square)
+    n:i = 0
+    while n < 3 do
+        diag_cell:i[] = fillarray(n, n)
+        csnset(eye, diag_cell, 1)
+        n += 1
+    od
+    tr:i        = csntrace(eye)
+    prints("trace = %g\n", tr)
+    turnoff
+endin
+
+</CsInstruments>
+<CsScore>
+i 1 0 0.1
+</CsScore>
+</CsoundSynthesizer>
+```
+
+## See also
+
+* [csnget](csnget.md)
+* [csnsetslice](csnsetslice.md)
+* [csninsert](csninsert.md)
+* [Set arrays and their invariant](set-arrays.md)
+
+## Credits
+
+Pasquale Mainolfi, 2026
