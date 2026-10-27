@@ -32,7 +32,7 @@ csound --opcode-dir=build example/csnsort.csd
 - **Reductions and statistics**: sum, prod, mean, min, max, median, variance,
   standard deviation, percentile, quantile, argmin/argmax, cumulative sums and
   products, differences, gradient, and moving-window statistics.
-- **Sorting and sets**: sort, argsort, unique, argunique, set conversion,
+- **Sorting and sets**: permutations, sort, argsort, unique, argunique, set conversion,
   membership, union, intersection, difference and set predicates.
 - **Linear algebra and geometry**: dot, inner, outer, matmul, trace, diagonal,
   norms, normalize, cross product, distances, angular distance, vector

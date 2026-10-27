@@ -86,6 +86,7 @@ entry means the operation lives outside NumPy proper.
 | `csnresize` | `ndarray.resize` | Zero-fills what it grows, like the method. `np.resize` repeats instead. |
 | `csnconcat` | `np.concatenate` | |
 | `csnstack` | `np.stack` | |
+| `csnframe` | `np.moveaxis(sliding_window_view(x, frame, axis)[..., ::hop, ...], -1, axis + 1)` | Frames and their positions take the framed axis's place; on the last axis, `sliding_window_view(x, frame)[..., ::hop, :]`. A copy; the tail that does not fill a frame is dropped. |
 | `csninsert` | `np.insert` | |
 | `csnremove` | `np.delete` | |
 | `csnpush` | `np.append` | In place, into reserved capacity. |
@@ -221,6 +222,7 @@ of re-sorting on every k-rate pass.
 | csnum | NumPy | Notes |
 | --- | --- | --- |
 | `csnshuffle` | `np.random.shuffle` | In place. |
+| `csnperm` | `np.array(list(itertools.permutations(a)))` | 1-D; the same rows in Heap's order; an optional count takes the first ones. |
 | `csnsort` | `np.sort` | |
 | `csnargsort` | `np.argsort` | Coordinates. |
 | `csnunique` | `np.unique` | |
@@ -296,6 +298,7 @@ overloads that take one; the numeric opcodes refuse it at compile time.
 | `csntranspose`, `csnflip`, `csnroll`, `csnreverse` | `np.transpose`, `np.flip`, `np.roll`, `a[::-1]` | A copy owns its strings; in place nothing is allocated. |
 | `csnconcat` | `np.concatenate` | Two `CsnStr`; flat without an axis. |
 | `csnstack` | `np.stack` | Two or more `CsnStr`, all of the same shape. |
+| `csnframe` | `sliding_window_view(a, frame)[..., ::hop, :]` | Each string copied into every frame that holds it. |
 | `csnpad` | `np.pad(a, w, constant_values="s")` | The fill string is required; the k form in place is refused on a real-time path. |
 | `csnpush`, `csninsert` | `np.append`, `np.insert` | In place, one `S` or a `CsnStr` block; the block k form is refused on a real-time path. |
 | `csnpop`, `csnremove` | `a[-1]` + `np.delete`, `np.delete` | One element comes back as an `S`, allowed on a real-time path; a removed block is a new `CsnStr`. |
@@ -371,6 +374,13 @@ overloads that take one; the numeric opcodes refuse it at compile time.
 | `csnmfcc` | `librosa.feature.mfcc` | HTK mel scale, Slaney-normalized bands, natural log. One argument sets both band and coefficient count. |
 | `csnmfbank` | `librosa.filters.mel` | The matrix itself, `(bands, nfft / 2 + 1)`. |
 | `csnmlogfbank` | — | The same matrix in logarithmic scale. |
+
+## Audio features
+
+| csnum | NumPy | Notes |
+| --- | --- | --- |
+| `csnzcr` | `librosa.feature.zero_crossing_rate(y, center=False)` | On a 1-D signal a number; along an axis one value per frame of `csnframe`. Defaults as librosa's: `\|x\| <= 1e-10` is 0, 0 counts as positive, crossings over `N`. |
+| `csnamdf` | `[np.mean(np.abs(x[:n - t] - x[t:])) for t in range(maxlag + 1)]` | The curve along an axis, replaced by `maxlag + 1` lags; divided by `N - tau`. The pitch is the caller's: search a lag range, `D(0)` is always 0. |
 
 ## Convolution and correlation
 

@@ -66,6 +66,7 @@ nav:
           - "csnresize": reference/csnresize.md
           - "csnconcat": reference/csnconcat.md
           - "csnstack": reference/csnstack.md
+          - "csnframe": reference/csnframe.md
           - "csninsert": reference/csninsert.md
           - "csnremove": reference/csnremove.md
           - "csnpush": reference/csnpush.md
@@ -227,6 +228,7 @@ nav:
           - "csnmovvar": reference/csnmovvar.md
       - "Sorting and sets":
           - "csnshuffle": reference/csnshuffle.md
+          - "csnperm": reference/csnperm.md
           - "csnsort": reference/csnsort.md
           - "csnargsort": reference/csnargsort.md
           - "csnunique": reference/csnunique.md
@@ -298,6 +300,9 @@ nav:
           - "csnmfcc": reference/csnmfcc.md
           - "csnmfbank": reference/csnmfbank.md
           - "csnmlogfbank": reference/csnmlogfbank.md
+      - "Audio features":
+          - "csnzcr": reference/csnzcr.md
+          - "csnamdf": reference/csnamdf.md
       - "Convolution and correlation":
           - "csnconvolve1d": reference/csnconvolve1d.md
           - "csncorrelate1d": reference/csncorrelate1d.md

@@ -245,7 +245,7 @@ Creation (`csnempty`, `csnfull`, `csnlike`, `csnfromarray`), the way out
 (`csntoarray` to `S[]`, `csnprint`), elements and slices (`csnget`, `csnset`,
 `[]`, `csngetslice`, `csnsetslice`, `csntake`), the queries, the layout
 opcodes (`csnreshape`, `csnflatten`, `csntranspose`, `csnflip`, `csnroll`,
-`csnreverse`), `csnconcat`, `csnstack` and `csnpad` with a string fill,
+`csnreverse`), `csnframe`, `csnconcat`, `csnstack` and `csnpad` with a string fill,
 `csnpush`, `csnpop`, `csninsert`, `csnremove`, `csntruncate`, `csnhead`,
 `csnresize`, `csncopy`, `csnshuffle`, the masks (`csnwhere`, `csnputmask`,
 `csncompress`, `csnselect`), the elementwise `csnstradd`, `csnstrmul`,

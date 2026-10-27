@@ -9,7 +9,7 @@ hide:
 # csnum
 
 NumPy-style arrays for Csound 7: n-dimensional real and complex arrays, with
-359 opcodes in 24 families and no dependencies beyond Csound.
+363 opcodes in 25 families and no dependencies beyond Csound.
 { .csn-tagline }
 
 [Get started](guide/requirements.md){ .md-button .md-button--primary }
@@ -173,11 +173,11 @@ library. The plugin builds from C11 sources against the Csound plugin headers.
 
     [csnsave](reference/csnsave.md), [csnload](reference/csnload.md), [csnsaveaudiofile](reference/csnsaveaudiofile.md), [csnloadaudiofile](reference/csnloadaudiofile.md)
 
--   **[Shape and layout](reference/index.md#shape-and-layout)** · 16
+-   **[Shape and layout](reference/index.md#shape-and-layout)** · 17
 
     ---
 
-    [csnreshape](reference/csnreshape.md), [csnflatten](reference/csnflatten.md), [csntranspose](reference/csntranspose.md), [csnflip](reference/csnflip.md), [csnroll](reference/csnroll.md) and 11 more
+    [csnreshape](reference/csnreshape.md), [csnflatten](reference/csnflatten.md), [csntranspose](reference/csntranspose.md), [csnflip](reference/csnflip.md), [csnroll](reference/csnroll.md) and 12 more
 
 -   **[Indexing and selection](reference/index.md#indexing-and-selection)** · 18
 
@@ -215,11 +215,11 @@ library. The plugin builds from C11 sources against the Csound plugin headers.
 
     [csnsum](reference/csnsum.md), [csnprod](reference/csnprod.md), [csnsub](reference/csnsub.md), [csnmean](reference/csnmean.md), [csnmin](reference/csnmin.md) and 21 more
 
--   **[Sorting and sets](reference/index.md#sorting-and-sets)** · 18
+-   **[Sorting and sets](reference/index.md#sorting-and-sets)** · 19
 
     ---
 
-    [csnshuffle](reference/csnshuffle.md), [csnsort](reference/csnsort.md), [csnargsort](reference/csnargsort.md), [csnunique](reference/csnunique.md), [csnargunique](reference/csnargunique.md) and 13 more
+    [csnshuffle](reference/csnshuffle.md), [csnperm](reference/csnperm.md), [csnsort](reference/csnsort.md), [csnargsort](reference/csnargsort.md), [csnunique](reference/csnunique.md) and 14 more
 
 -   **[Linear algebra and geometry](reference/index.md#linear-algebra-and-geometry)** · 20
 
@@ -244,6 +244,12 @@ library. The plugin builds from C11 sources against the Csound plugin headers.
     ---
 
     [csnmfcc](reference/csnmfcc.md), [csnmfbank](reference/csnmfbank.md), [csnmlogfbank](reference/csnmlogfbank.md)
+
+-   **[Audio features](reference/index.md#audio-features)** · 2
+
+    ---
+
+    [csnzcr](reference/csnzcr.md), [csnamdf](reference/csnamdf.md)
 
 -   **[Convolution and correlation](reference/index.md#convolution-and-correlation)** · 16
 
